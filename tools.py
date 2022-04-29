@@ -41,16 +41,19 @@ class Tool:
 
 class JsonTool:
     def __init__(self, sql_pool: PooledDB):
-        self.cur = sql_pool.connection().cursor()
+        self.conn = sql_pool.connection()
+        self.cur = self.conn.cursor()
 
     def id_2_name(self, user_id):
         self.cur.execute("SELECT `user_name` FROM `user` WHERE `id` = %s", user_id)
         user = self.cur.fetchone()[0]
+        self.conn.close()
         return user
 
     def id_route_2_data(self, user_id, data_name):
         self.cur.execute("SELECT `json_data` FROM `json` WHERE `user_id` = %s AND `route_name` = %s", (user_id, data_name))
         json_data = self.cur.fetchone()
+        self.conn.close()
         return json_data
 
     def id_2_info(self, user_id, pages: int, limit: int):
@@ -59,5 +62,6 @@ class JsonTool:
         route_name = self.cur.fetchall()
         self.cur.execute("SELECT COUNT(*)  FROM `json` WHERE `user_id` = %s", user_id)
         all_route = self.cur.fetchone()[0]
+        self.conn.close()
         return route_name, all_route
 
