@@ -37,7 +37,7 @@ def json_decorator():
     return _json_decorator
 
 
-@json_r.route("/add", methods=["POST"])
+@json_r.post("/add")
 @json_decorator()
 def new_data():
     # get token
@@ -64,6 +64,8 @@ def new_data():
     cur.execute("INSERT INTO `json` (`json_data`,`user_id`,`route_name`) VALUES (%s,%s,%s)",
                 (data_content, user_id, data_name))
     conn.commit()
+    cur.close()
+    conn.close()
     # return
     return jsonify(
         {
@@ -78,7 +80,7 @@ def new_data():
     )
 
 
-@json_r.route("/update_content", methods=["POST"])
+@json_r.post("/update_json")
 @json_decorator()
 def update_data():
     # get token
@@ -105,6 +107,8 @@ def update_data():
     cur.execute("UPDATE `json` SET `json_data` = %s WHERE `user_id` = %s AND `route_name` = %s",
                 (data_content, user_id, data_name))
     conn.commit()
+    cur.close()
+    conn.close()
     # return
     return jsonify(
         {
@@ -119,9 +123,7 @@ def update_data():
     )
 
 
-
-
-@json_r.route("/update_data_name", methods=["POST"])
+@json_r.post("/update_route")
 @json_decorator()
 def update_data_name():
     # get token
@@ -162,18 +164,19 @@ def update_data_name():
         })
 
 
-@json_r.route("/delete", methods=["DELETE"])
+@json_r.post("/delete")
 @json_decorator()
 def delete_data():
+    # get token
     form_data = request.form
     auth = request.headers.get("Authorization")
     token = re.findall(r"^Bearer\s+(.*)$", auth)[0]
-    r = redis.Redis(connection_pool=redisPool, decode_responses=True)
-    _redis_key = f"json:{token}"
-    user_id = r.get(_redis_key).decode()
-    r.quit()
+    # get user id
+    user_id = tool.get_user_id(token)
+    # get user data_name
     data_name = form_data['data_name']
     # check in sql , it has yet?
+    json_data = json_tools.id_route_2_data(user_id, data_name)
     conn = sqlPool.connection()
     cur = conn.cursor()
     cur.execute("SELECT `json_data` FROM `json` WHERE `user_id` = %s AND `route_name` = %s", (user_id, data_name))
@@ -183,7 +186,8 @@ def delete_data():
             "message": "data not exists!",
             "success": False,
         }
-    cur.execute("DELETE FROM `json` WHERE `user_id` = %s AND `route_name` = %s", (user_id, data_name))
+    cur.execute(
+        "DELETE FROM `json` WHERE `user_id` = %s AND `route_name` = %s", (user_id, data_name))
     conn.commit()
     return jsonify(
         {
@@ -197,6 +201,35 @@ def delete_data():
     )
 
 
+@json_r.post("/get")
+@json_decorator()
+def get():
+    # get token
+    pages = request.args.get("page")
+    limit = request.args.get("limit")
+    auth = request.headers.get("Authorization")
+    token = re.findall(r"^Bearer\s+(.*)$", auth)[0]
+    # get user id
+    user_id = tool.get_user_id(token)
+    # get user name
+    user_name = json_tools.id_2_name(user_id)[0]
+    # get user data
+    route_name, count = json_tools.id_2_info(user_id, int(pages), int(limit))
+    route_list = []
+    for i in route_name:
+        route_list.append(i[0])
+    return jsonify({
+        "message": "success info",
+        "success": False,
+        "data":
+            {
+                "username": user_name,
+                "route_name": route_list,
+                "count": count
+            }
+    })
+
+
 @json_clear.route("/<path:user>/<path:json_data_name>")
 def _sub_path(user, json_data_name):
     # find in sql
@@ -206,7 +239,8 @@ def _sub_path(user, json_data_name):
     user_id = cur.fetchone()[0]
     conn = sqlPool.connection()
     cur = conn.cursor()
-    cur.execute("SELECT `json_data` FROM `json` WHERE `user_id` = %s AND `route_name` = %s", (user_id, json_data_name))
+    cur.execute("SELECT `json_data` FROM `json` WHERE `user_id` = %s AND `route_name` = %s",
+                (user_id, json_data_name))
     json_data = cur.fetchone()
     if not json_data:
         return {

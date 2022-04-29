@@ -49,7 +49,8 @@ def login_handler():
             "message": "user not in admin list",
             "data": {},
         })
-
+    cur.close()
+    conn.close()
     tool_util = Tool(redisPool)
     token_r = tool_util.create_user_token(userId)
     return jsonify({
