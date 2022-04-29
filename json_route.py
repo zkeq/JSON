@@ -76,6 +76,7 @@ def new_data():
     cur = conn.cursor()
     user = json_tools.id_2_name(user_id)
     json_data = json_tools.id_route_2_data(user_id, data_name)
+    print(json_data)
     if json_data:
         return {
             "message": "data exists!",

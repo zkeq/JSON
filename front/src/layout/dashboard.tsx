@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import HomeOutlined from "@ant-design/icons/HomeOutlined";
+import DashboardOutlined from "@ant-design/icons/DashboardOutlined";
 import {
     Layout,
     Menu,
@@ -13,48 +14,59 @@ import config from "../config";
 const { Content, Footer, Sider } = Layout;
 
 const DashboardLayout = () => {
-  //  const navigate = useNavigate();
+    const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
         if (localStorage.getItem('token') === null) {
             message.warn('please Login First');
-          //  navigate('/login')
+            navigate('/login')
+            return
         }
         // check login status
         httpR.post("/api/login/is_login", {}).then((res: any) => {
             if (res.success !== true) {
                 localStorage.removeItem("token")
                 message.warn('login timeout');
-              //  navigate('/login')
+                navigate('/login')
             }
         })
         // eslint-disable-next-line
     }, []);
 
+    type MenuItem = Required<MenuProps>['items'][number];
+
+    const getItem = (
+        label: React.ReactNode,
+        key: React.Key,
+        icon?: React.ReactNode,
+        children?: MenuItem[],
+        type?: 'group',
+    ): MenuItem => {
+        return {
+            key,
+            icon,
+            children,
+            label,
+            type,
+        } as MenuItem;
+    }
+
 
     const items: MenuProps['items'] = [
-        {
-            label: '首页',
-            key: '/',
-            icon: <HomeOutlined />,
-        },
-        {
-            label: 'json管理',
-            key: '/json',
-            icon: <DashboardLayout />,
-        },
+        getItem('首页', '/', <HomeOutlined />),
+        getItem('json 管理', '/json', <DashboardOutlined />),
     ]
 
     const changeMenu = (e: any) => {
-       // if (e.key !== '/logout') navigate(e.key)
+        if (e.key !== '/logout') navigate(e.key)
     }
 
     let selected_key: string[] = []
     useEffect(() => {
         selected_key.push(location.pathname)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[location.pathname])
+    }, [location.pathname])
     return (<>
         <Layout style={{ minHeight: '100vh' }}>
             <Sider
