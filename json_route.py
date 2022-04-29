@@ -2,10 +2,10 @@ import re
 from functools import wraps
 
 import redis
-from flask import Blueprint, request, redirect, jsonify
+from flask import Blueprint, request, jsonify
 from sql import sqlPool, redisPool
 from tools import Tool, JsonTool
-from config import ID, REDIRECT_URL, AK, API_URL, JSON_API_URL
+from config import JSON_API_URL
 
 json_r = Blueprint('json', __name__, url_prefix='/api/json')
 json_clear = Blueprint('json_clear', __name__, url_prefix='/json')

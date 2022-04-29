@@ -28,7 +28,19 @@ const Control = lazy(() => import('./pages/control'));
 const Login = lazy(() => import('./pages/login'));
 
 const App: React.FC = (props: any): ReactElement => {
-  const Loading = (): ReactElement => <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} size="large" />
+  
+  const Loading = (): ReactElement => <>
+    <div style={{
+      width: '100%',
+      height: '50rem',
+      textAlign: 'center',
+      position: 'relative',
+      lineHeight: '50rem',
+      zIndex: 100,
+    }}>
+      <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} size="large" />
+    </div>
+  </>
   return (
     <Router>
       <Routes>

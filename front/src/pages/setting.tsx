@@ -2,39 +2,45 @@ import {
     Button,
     Form,
     Input,
-    FormItemProps,
 } from 'antd';
 import type { ReactElement } from 'react'
 
 const Setting: React.FC = (props: any): ReactElement => {
 
-    const submit = (value: FormItemProps) => {
-        console.log(value);
+    const submit = (value: any) => {
+        let username: string = value.username
+        console.log(username)
     }
-
     return (
-        <Form
-            name="basic"
-            labelCol={{ span: 4 }}
-            wrapperCol={{ span: 16 }}
-            initialValues={{ remember: true }}
-            onFinish={submit}
-            autoComplete="off"
+        <div
+            style={{
+                maxWidth: "90%",
+                paddingLeft: "10%",
+            }}
         >
-            <Form.Item
-                label="Username"
-                name="username"
-                rules={[{ required: true, message: 'Please input your username!' }]}
+            <Form
+                name="basic"
+                labelCol={{ span: 4 }}
+                wrapperCol={{ span: 16 }}
+                initialValues={{ remember: true }}
+                onFinish={submit}
+                layout="vertical"
+                autoComplete="off"
             >
-                <Input />
-            </Form.Item>
-
-            <Form.Item wrapperCol={{ offset: 4, span: 16 }}>
-                <Button type="primary" htmlType="submit">
-                    Submit
-                </Button>
-            </Form.Item>
-        </Form>
+                <Form.Item
+                    label="Username"
+                    name="username"
+                    rules={[{ required: true, message: 'Please input your username!' }]}
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item>
+                    <Button type="primary" htmlType="submit">
+                        Submit
+                    </Button>
+                </Form.Item>
+            </Form>
+        </div>
     );
 }
 

@@ -10,6 +10,7 @@ from flask import Flask, request, jsonify
 from login_route import login_r
 from json_route import json_r, json_clear
 from page_route import page_r
+from user_route import user_r
 
 app = Flask(__name__, template_folder="./front/build", static_folder="./front/build", static_url_path="")
 
@@ -18,6 +19,7 @@ app.register_blueprint(login_r)
 app.register_blueprint(json_r)
 app.register_blueprint(json_clear)
 app.register_blueprint(page_r)
+app.register_blueprint(user_r)
 
 
 @app.after_request
