@@ -76,12 +76,10 @@ def new_data():
     cur = conn.cursor()
     user = json_tools.id_2_name(user_id)
     json_data = json_tools.id_route_2_data(user_id, data_name)
-    print(json_data)
     if json_data:
         return {
             "message": "data exists!",
-            "success": False,
-            "code": 420
+            "success": False
         }
     cur.execute("INSERT INTO `json` (`json_data`,`user_id`,`route_name`) VALUES (%s,%s,%s)",
                 (data_content, user_id, data_name))
@@ -90,7 +88,6 @@ def new_data():
         {
             "message": "Success INFO",
             "success": True,
-            "code": 200,
             "data": {
                 "user": user,
                 "data_name": data_name,
@@ -115,15 +112,12 @@ def update_data():
     # check in sql , it has yet?
     conn = sqlPool.connection()
     cur = conn.cursor()
-    cur.execute("SELECT `user_name` FROM `user` WHERE `id` = %s", user_id)
-    user = cur.fetchone()[0]
-    cur.execute("SELECT `json_data` FROM `json` WHERE `user_id` = %s AND `route_name` = %s", (user_id, data_name))
-    json_data = cur.fetchone()
+    user = json_tools.id_2_name(user_id)
+    json_data = json_tools.id_route_2_data(user_id, data_name)
     if not json_data:
         return {
             "message": "data not exists!",
-            "success": False,
-            "code": 420
+            "success": False
         }
     cur.execute("UPDATE `json` SET `json_data` = %s WHERE `user_id` = %s AND `route_name` = %s",
                 (data_content, user_id, data_name))
@@ -132,7 +126,6 @@ def update_data():
         {
             "message": "Success update INFO",
             "success": True,
-            "code": 200,
             "data": {
                 "user": user,
                 "data_name": data_name,
@@ -159,13 +152,12 @@ def update_data_name():
     cur = conn.cursor()
     cur.execute("SELECT `user_name` FROM `user` WHERE `id` = %s", user_id)
     user = cur.fetchone()[0]
-    cur.execute("SELECT `json_data` FROM `json` WHERE `user_id` = %s AND `route_name` = %s", (user_id, data_name))
+    cur.execute("SELECT `json_data` FROM `json` WHERE `user_id` = %s AND `route_name` = %s", (user_id, new_data_name))
     json_data = cur.fetchone()
-    if not json_data:
+    if json_data:
         return {
-            "message": "data not exists!",
-            "success": False,
-            "code": 420
+            "message": "data exists!",
+            "success": False
         }
     cur.execute("UPDATE `json` SET `route_name` = %s WHERE `user_id` = %s AND `route_name` = %s",
                 (new_data_name, user_id, data_name))
@@ -174,7 +166,6 @@ def update_data_name():
         {
             "message": "Success update route name INFO",
             "success": True,
-            "code": 200,
             "data": {
                 "user": user,
                 "data_name": data_name,
@@ -201,13 +192,19 @@ def update_user_name():
     cur = conn.cursor()
     cur.execute("SELECT `user_name` FROM `user` WHERE `id` = %s", user_id)
     user_name = cur.fetchone()[0]
+    cur.execute("SELECT * FROM `user` WHERE `user_name` = %s", new_user_name)
+    user_exists = cur.fetchone()
+    if user_exists:
+        return {
+            "message": "user exists!",
+            "success": False
+        }
     cur.execute("UPDATE `user` SET `user_name` = %s WHERE `user_name` = %s", (new_user_name, user_name))
     conn.commit()
     return jsonify(
         {
             "message": "Success update route name INFO",
             "success": True,
-            "code": 200,
             "data": {
                 "old_data_name": user_name,
                 "new_user_name": new_user_name
@@ -236,7 +233,6 @@ def set_user_name():
         {
             "message": "Success set user name INFO",
             "success": True,
-            "code": 200,
             "data": {
                 "user_name": user_name,
                 "user_id": user_id
@@ -265,14 +261,12 @@ def delete_data():
         return {
             "message": "data not exists!",
             "success": False,
-            "code": 420
         }
     cur.execute("DELETE FROM `json` WHERE `user_id` = %s AND `route_name` = %s", (user_id, data_name))
     conn.commit()
     return jsonify(
         {
             "message": "Success delte INFO",
-            "code": 200,
             "success": True,
             "data": {
                 "user_id": user_id,
@@ -296,7 +290,6 @@ def _sub_path(user, json_data_name):
     if not json_data:
         return {
             "message": "data not exists!",
-            "success": False,
-            "code": 404
+            "success": False
         }
     return json_data[0], 200, ({"content-type": "application/json", "access-control-allow-origin": "*"})

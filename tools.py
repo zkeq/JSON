@@ -45,7 +45,7 @@ class JsonTool:
 
     def id_2_name(self, user_id):
         self.cur.execute("SELECT `user_name` FROM `user` WHERE `id` = %s", user_id)
-        user = self.cur.fetchone()
+        user = self.cur.fetchone()[0]
         return user
 
     def id_route_2_data(self, user_id, data_name):

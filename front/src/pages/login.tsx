@@ -17,7 +17,7 @@ const Login: React.FC = (props: any): ReactElement => {
             return
         }
         // process token
-        setMsg('login, please wait, DO NOT REFRESH...')
+        setMsg('verifying token...')
         httpR.post("/api/login/handler", {
             token: token
         }).then((res) => {

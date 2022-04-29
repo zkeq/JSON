@@ -7,14 +7,19 @@ import {
   Route,
   Routes
 } from 'react-router-dom'
+import {
+  Button,
+  Result,
+} from 'antd';
 import 'antd/dist/antd.min.css'
 
 // pages
-import Login from './pages/login'
+import loadable from './support/loadable';
 
-import DashboardLayout from "./layout/dashboard";
-import Index from "./pages/index";
-import { Button, Result } from 'antd';
+const DashboardLayout = loadable({ loader: () => import('./layout/dashboard') });
+const Index = loadable({ loader: () => import('./pages/index') });
+const Setting = loadable({ loader: () => import('./pages/setting') });
+const Login = loadable({ loader: () => import('./pages/login') });
 
 const App: React.FC = (props: any): ReactElement => {
   return (
@@ -22,7 +27,8 @@ const App: React.FC = (props: any): ReactElement => {
       <Routes>
         <Route path='/' element={<DashboardLayout />}>
           <Route index element={<Index />} />
-          <Route path="/json" element={<Index />} />
+          <Route path="/control" element={<Index />} />
+          <Route path="/setting" element={<Setting />} />
         </Route>
         <Route path='login' element={<Login />} />
         <Route path="*" element={<Result

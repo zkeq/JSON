@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import HomeOutlined from "@ant-design/icons/HomeOutlined";
 import DashboardOutlined from "@ant-design/icons/DashboardOutlined";
+import SettingOutlined from "@ant-design/icons/SettingOutlined";
 import {
     Layout,
     Menu,
@@ -55,7 +56,8 @@ const DashboardLayout = () => {
 
     const items: MenuProps['items'] = [
         getItem('首页', '/', <HomeOutlined />),
-        getItem('json 管理', '/json', <DashboardOutlined />),
+        getItem('json 管理', '/control', <DashboardOutlined />),
+        getItem('用户设置', '/setting', <SettingOutlined />),
     ]
 
     const changeMenu = (e: any) => {

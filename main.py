@@ -11,7 +11,7 @@ from login_route import login_r
 from json_route import json_r, json_clear
 from page_route import page_r
 
-app = Flask(__name__, template_folder="templates", static_folder="static", static_url_path="/front/build/static")
+app = Flask(__name__, template_folder="./front/build", static_folder="./front/build", static_url_path="")
 
 # 注册bluePrintl
 app.register_blueprint(login_r)
