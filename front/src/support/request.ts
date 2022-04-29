@@ -2,6 +2,7 @@ import axios from 'axios';
 import Qs from 'qs'
 import type { AxiosRequestConfig } from 'axios'
 import Config from '../config';
+import { message } from 'antd';
 //请求封装拦截
 
 const instance = axios.create({
@@ -26,6 +27,7 @@ instance.interceptors.response.use(
     response => {
         return response.data;
     }, error => {
+        message.error(error.message);
         return Promise.reject(error);
     },
 );

@@ -2,10 +2,9 @@
 # DONE 做一个登录
 # DONE 生成新 json 列表
 # TODO 做一个后台，可以从 api 读取登录获取的 json 列表
-# TODO 管理 json 列表
+# DONE 管理 json 列表
 # TODO json 的模板可以自定义
-from curses import flash
-import re
+# 弄模板这玩意干啥
 from flask import Flask, request, jsonify
 from login_route import login_r
 from json_route import json_r, json_clear

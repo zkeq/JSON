@@ -36,7 +36,7 @@ class Tool:
         if not self.check_token(token):
             return False
         _redis_key = f"json:{token}"
-        return self.redis.get(_redis_key)
+        return self.redis.get(_redis_key).decode()
 
 
 class JsonTool:
@@ -72,12 +72,12 @@ class JsonTool:
 
         start = (pages - 1) * limit
         cur.execute(
-            "SELECT `route_name` FROM `json` WHERE `user_id` = %s LIMIT %s,%s", (user_id, start, limit))
-        route_name = cur.fetchall()
+            "SELECT `route_name`,`id` FROM `json` WHERE `user_id` = %s ORDER BY `id` DESC LIMIT %s,%s", (user_id, start, limit))
+        routes = cur.fetchall()
         cur.execute(
             "SELECT COUNT(*)  FROM `json` WHERE `user_id` = %s", user_id)
-        all_route = cur.fetchone()[0]
+        counts = cur.fetchone()[0]
 
         cur.close()
         conn.close()
-        return route_name, all_route
+        return routes, counts

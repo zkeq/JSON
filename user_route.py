@@ -56,6 +56,7 @@ def update_user_name():
                 (new_user_name, user_id))
     conn.commit()
     cur.close()
+    conn.close()
     return jsonify(
         {
             "message": "Success update user name INFO",

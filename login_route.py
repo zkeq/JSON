@@ -32,23 +32,14 @@ def login_handler():
     # find in sql
     conn = sqlPool.connection()
     cur = conn.cursor()
-    cur.execute("SELECT `id`,`role` FROM `user` WHERE `open_id` = %s", openid)
+    cur.execute("SELECT `id` FROM `user` WHERE `open_id` = %s", openid)
     r = cur.fetchone()
     if not r:
-        cur.execute("INSERT INTO `user` (`role`,`user_name`,`open_id`) VALUES (%s,%s,%s)", ('user', "", openid))
-        role = 'user'
+        cur.execute("INSERT INTO `user` (`user_name`,`open_id`) VALUES (%s,%s)", ("", openid))
         userId = cur.lastrowid
         conn.commit()
     else:
-        role = r[1]
         userId = r[0]
-
-    if role != 'admin':
-        return jsonify({
-            "success": False,
-            "message": "user not in admin list",
-            "data": {},
-        })
     cur.close()
     conn.close()
     tool_util = Tool(redisPool)
