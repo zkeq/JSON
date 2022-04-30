@@ -77,10 +77,8 @@ def user_name():
     token = re.findall(r"^Bearer\s+(.*)$", auth)[0]
     # get user id
     user_id = tool.get_user_id(token)
-    print("user_id:", user_id)
     # get user name
     user_name = json_tools.id_2_name(user_id)
-    print("user_name:", user_name)
     return jsonify({
         "message": "success info",
         "success": True,
