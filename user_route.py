@@ -43,17 +43,17 @@ def update_user_name():
     # check in sql , it has yet?
     # get user name
     user_name = json_tools.id_2_name(user_id)
-    conn = sqlPool.connection()
+    conn = sqlPool.connect("db.db")
     cur = conn.cursor()
-    cur.execute("SELECT `id` FROM `user` WHERE `user_name` = %s", new_user_name)
+    cur.execute("SELECT `id` FROM `user` WHERE `user_name` = ?", [new_user_name])
     user_exists = cur.fetchone()
     if user_exists:
         return {
             "message": "user exists!",
             "success": False
         }
-    cur.execute("UPDATE `user` SET `user_name` = %s WHERE `id` = %s",
-                (new_user_name, user_id))
+    cur.execute("UPDATE `user` SET `user_name` = ? WHERE `id` = ?",
+                [new_user_name, user_id])
     conn.commit()
     cur.close()
     conn.close()

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, jsonify
-from sql import sqlPool, redisPool
+from sql import redisPool, sqlPool
 import requests
 from tools import Tool
 from config import ID, REDIRECT_URL, AK, API_URL
@@ -30,12 +30,12 @@ def login_handler():
         })
     openid = data['data']['openId']
     # find in sql
-    conn = sqlPool.connection()
+    conn = sqlPool.connect("db.db")
     cur = conn.cursor()
-    cur.execute("SELECT `id` FROM `user` WHERE `open_id` = %s", openid)
+    cur.execute("SELECT `id` FROM `user` WHERE `open_id` = ?", [openid])
     r = cur.fetchone()
     if not r:
-        cur.execute("INSERT INTO `user` (`user_name`,`open_id`) VALUES (%s,%s)", ("", openid))
+        cur.execute("INSERT INTO `user` (`user_name`,`open_id`) VALUES (?,?)", ["", openid])
         userId = cur.lastrowid
         conn.commit()
     else:

@@ -44,10 +44,10 @@ class JsonTool:
         self.pool = sql_pool
 
     def id_2_name(self, user_id):
-        conn = self.pool.connection()
+        conn = self.pool.connect("db.db")
         cur = conn.cursor()
 
-        cur.execute("SELECT `user_name` FROM `user` WHERE `id` = %s", user_id)
+        cur.execute("SELECT `user_name` FROM `user` WHERE `id` = ?", [user_id])
         user = cur.fetchone()[0]
 
         cur.close()
@@ -55,11 +55,11 @@ class JsonTool:
         return user
 
     def id_route_2_data(self, user_id, data_name):
-        conn = self.pool.connection()
+        conn = self.pool.connect("db.db")
         cur = conn.cursor()
 
         cur.execute(
-            "SELECT `json_data` FROM `json` WHERE `user_id` = %s AND `route_name` = %s", (user_id, data_name))
+            "SELECT `json_data` FROM `json` WHERE `user_id` = ? AND `route_name` = ?", [user_id, data_name])
         json_data = cur.fetchone()
 
         cur.close()
@@ -67,15 +67,15 @@ class JsonTool:
         return json_data
 
     def id_2_info(self, user_id, pages: int, limit: int):
-        conn = self.pool.connection()
+        conn = self.pool.connect("db.db")
         cur = conn.cursor()
 
         start = (pages - 1) * limit
         cur.execute(
-            "SELECT `route_name`,`id` FROM `json` WHERE `user_id` = %s ORDER BY `id` DESC LIMIT %s,%s", (user_id, start, limit))
+            "SELECT `route_name`,`id` FROM `json` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ?,?", [user_id, start, limit])
         routes = cur.fetchall()
         cur.execute(
-            "SELECT COUNT(*)  FROM `json` WHERE `user_id` = %s", user_id)
+            "SELECT COUNT(*)  FROM `json` WHERE `user_id` = ?", [user_id])
         counts = cur.fetchone()[0]
 
         cur.close()

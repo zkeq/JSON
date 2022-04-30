@@ -1,5 +1,3 @@
-from crypt import methods
-from curses.ascii import isdigit
 import re
 from functools import wraps
 
@@ -68,10 +66,10 @@ def new_data():
             "success": False
         }
     # insert data
-    conn = sqlPool.connection()
+    conn = sqlPool.connect("db.db")
     cur = conn.cursor()
-    cur.execute("INSERT INTO `json` (`json_data`,`user_id`,`route_name`) VALUES (%s,%s,%s)",
-                (json.dumps(data_content), user_id, data_name))
+    cur.execute("INSERT INTO `json` (`json_data`,`user_id`,`route_name`) VALUES (?,?,?)",
+                [json.dumps(data_content), user_id, data_name])
     conn.commit()
     cur.close()
     conn.close()
@@ -116,10 +114,10 @@ def update_data():
             "success": False
         }
     # update sql
-    conn = sqlPool.connection()
+    conn = sqlPool.connect("db.db")
     cur = conn.cursor()
-    cur.execute("UPDATE `json` SET `json_data` = %s WHERE `user_id` = %s AND `route_name` = %s",
-                (data_content, user_id, data_name))
+    cur.execute("UPDATE `json` SET `json_data` = ? WHERE `user_id` = ? AND `route_name` = ?",
+                [data_content, user_id, data_name])
     conn.commit()
     cur.close()
     conn.close()
@@ -159,10 +157,10 @@ def update_data_name():
             "success": False
         }
     # update sql
-    conn = sqlPool.connection()
+    conn = sqlPool.connect("db.db")
     cur = conn.cursor()
-    cur.execute("UPDATE `json` SET `route_name` = %s WHERE `user_id` = %s AND `route_name` = %s",
-                (new_data_name, user_id, data_name))
+    cur.execute("UPDATE `json` SET `route_name` = ? WHERE `user_id` = ? AND `route_name` = ?",
+                [new_data_name, user_id, data_name])
     conn.commit()
     cur.close()
     conn.close()
@@ -198,10 +196,10 @@ def delete_data():
             "message": "data not exists!",
             "success": False
         }
-    conn = sqlPool.connection()
+    conn = sqlPool.connect("db.db")
     cur = conn.cursor()
     cur.execute(
-        "DELETE FROM `json` WHERE `user_id` = %s AND `route_name` = %s", (user_id, data_name))
+        "DELETE FROM `json` WHERE `user_id` = ? AND `route_name` = ?", [user_id, data_name])
     conn.commit()
     cur.close()
     conn.close()
@@ -260,14 +258,13 @@ def get():
 @json_clear.route("/<path:user>/<path:json_data_name>",methods=["GET","POST"])
 def _sub_path(user, json_data_name):
     # find in sql
-    conn = sqlPool.connection()
+    conn = sqlPool.connect("db.db")
     cur = conn.cursor()
-    cur.execute("SELECT `id` FROM `user` WHERE `user_name` = %s", user)
+    cur.execute("SELECT `id` FROM `user` WHERE `user_name` = ?", [user])
     user_id = cur.fetchone()[0]
-    conn = sqlPool.connection()
     cur = conn.cursor()
-    cur.execute("SELECT `json_data` FROM `json` WHERE `user_id` = %s AND `route_name` = %s",
-                (user_id, json_data_name))
+    cur.execute("SELECT `json_data` FROM `json` WHERE `user_id` = ? AND `route_name` = ?",
+                [user_id, json_data_name])
     json_data = cur.fetchone()
     if not json_data:
         return {
