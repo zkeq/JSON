@@ -1,8 +1,8 @@
 # coding:utf-8
 
 # oauth
-ID = 20220428320271356
-AK = "io1e7vMZekU36dokrYbRiYkrEjVED0KC8pG8MQKrYjdWEnZ7nRoAK7RaMcyEN8ny"
+ID = ""
+AK = ""
 API_URL = "https://9420.ltd/"
 
 # config
